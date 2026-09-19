@@ -1,0 +1,152 @@
+[
+  {
+    "company": "Google",
+    "title": "Data Scientist",
+    "description": "We look for Python, SQL, statistics, machine learning, TensorFlow, experiment design, data visualization, BigQuery, and communication skills. Experience with A/B testing and causal inference is a plus."
+  },
+  {
+    "company": "Meta",
+    "title": "Data Scientist",
+    "description": "Strong SQL and Python required. Machine learning, statistics, A/B testing, product sense, and data visualization with Tableau or similar. Spark experience for large-scale data is valued."
+  },
+  {
+    "company": "Amazon",
+    "title": "Data Scientist",
+    "description": "Python, SQL, machine learning, statistics, AWS, and experiment design. Ability to productionize models, communicate insights, and work with large datasets in Spark or Redshift."
+  },
+  {
+    "company": "Microsoft",
+    "title": "Data Scientist",
+    "description": "Python, SQL, Azure, machine learning, statistics, and data visualization. Experience with NLP, deep learning, and experiment design is preferred."
+  },
+  {
+    "company": "Netflix",
+    "title": "Data Scientist",
+    "description": "Advanced SQL, Python, statistics, causal inference, A/B testing, machine learning, and data visualization. Strong communication and product analytics background."
+  },
+  {
+    "company": "Google",
+    "title": "Data Engineer",
+    "description": "SQL, Python, Spark, Airflow, BigQuery, data modeling, ETL, Kafka, and cloud infrastructure. Experience with Docker and Kubernetes is a plus."
+  },
+  {
+    "company": "Amazon",
+    "title": "Data Engineer",
+    "description": "Python, SQL, Spark, AWS, ETL, data modeling, Airflow, Kafka, and Docker. Build reliable pipelines and data warehouses."
+  },
+  {
+    "company": "Meta",
+    "title": "Data Engineer",
+    "description": "SQL, Python, Spark, Hive, Presto, Airflow, data modeling, and ETL. Experience with Kafka streaming and cloud data platforms."
+  },
+  {
+    "company": "Snowflake",
+    "title": "Data Engineer",
+    "description": "SQL, Python, Snowflake, dbt, Airflow, data modeling, ETL, Spark, and cloud warehouses on AWS or Azure."
+  },
+  {
+    "company": "Uber",
+    "title": "Data Engineer",
+    "description": "Python, SQL, Spark, Kafka, Airflow, data modeling, Docker, Kubernetes, and large-scale ETL pipelines."
+  },
+  {
+    "company": "Google",
+    "title": "Machine Learning Engineer",
+    "description": "Python, machine learning, TensorFlow, PyTorch, deep learning, SQL, Spark, Docker, Kubernetes, and MLOps. Productionize models at scale."
+  },
+  {
+    "company": "OpenAI",
+    "title": "Machine Learning Engineer",
+    "description": "Python, PyTorch, deep learning, NLP, transformers, machine learning, CUDA, distributed training, Docker, and Kubernetes."
+  },
+  {
+    "company": "Amazon",
+    "title": "Machine Learning Engineer",
+    "description": "Python, machine learning, PyTorch or TensorFlow, AWS SageMaker, SQL, Docker, MLOps, Spark, and experiment tracking."
+  },
+  {
+    "company": "Microsoft",
+    "title": "Machine Learning Engineer",
+    "description": "Python, Azure, machine learning, deep learning, SQL, Docker, Kubernetes, MLOps, and data pipelines."
+  },
+  {
+    "company": "Apple",
+    "title": "Machine Learning Engineer",
+    "description": "Python, PyTorch, deep learning, on-device ML, SQL, C++, machine learning, and production deployment."
+  },
+  {
+    "company": "Google",
+    "title": "Software Engineer",
+    "description": "Java, Python, C++, algorithms, data structures, distributed systems, SQL, Linux, and system design. Experience with Kubernetes is a plus."
+  },
+  {
+    "company": "Meta",
+    "title": "Software Engineer",
+    "description": "C++, Python, Java, React, distributed systems, SQL, algorithms, and system design. GraphQL and Hack/PHP experience helpful."
+  },
+  {
+    "company": "Amazon",
+    "title": "Software Engineer",
+    "description": "Java, Python, AWS, distributed systems, SQL, Docker, Kubernetes, and system design. Microservices and REST APIs."
+  },
+  {
+    "company": "Microsoft",
+    "title": "Software Engineer",
+    "description": "C#, Java, Python, Azure, SQL, distributed systems, Docker, Kubernetes, and system design."
+  },
+  {
+    "company": "Stripe",
+    "title": "Software Engineer",
+    "description": "Ruby, Java, Python, SQL, distributed systems, APIs, Docker, Kubernetes, and system design."
+  },
+  {
+    "company": "Google",
+    "title": "Frontend Engineer",
+    "description": "JavaScript, TypeScript, React, CSS, HTML, accessibility, performance, testing, and GraphQL."
+  },
+  {
+    "company": "Airbnb",
+    "title": "Frontend Engineer",
+    "description": "JavaScript, TypeScript, React, CSS, HTML, testing, accessibility, and design systems."
+  },
+  {
+    "company": "Netflix",
+    "title": "Frontend Engineer",
+    "description": "JavaScript, TypeScript, React, CSS, HTML, performance, testing, and GraphQL."
+  },
+  {
+    "company": "Shopify",
+    "title": "Frontend Engineer",
+    "description": "JavaScript, TypeScript, React, CSS, HTML, GraphQL, testing, and accessibility."
+  },
+  {
+    "company": "Meta",
+    "title": "Frontend Engineer",
+    "description": "JavaScript, React, TypeScript, CSS, HTML, GraphQL, performance, and testing."
+  },
+  {
+    "company": "McKinsey",
+    "title": "Product Analyst",
+    "description": "SQL, Excel, Tableau, statistics, communication, A/B testing, Python, and product sense."
+  },
+  {
+    "company": "Spotify",
+    "title": "Product Analyst",
+    "description": "SQL, Python, Tableau, A/B testing, statistics, Excel, and data visualization. Strong communication."
+  },
+  {
+    "company": "Uber",
+    "title": "Product Analyst",
+    "description": "SQL, Python, statistics, A/B testing, Tableau or Looker, Excel, and experiment design."
+  },
+  {
+    "company": "LinkedIn",
+    "title": "Product Analyst",
+    "description": "SQL, Python, A/B testing, statistics, data visualization, Tableau, Excel, and communication."
+  },
+  {
+    "company": "Amazon",
+    "title": "Business Analyst",
+    "description": "Excel, SQL, Tableau, communication, statistics, and stakeholder management. Python is a plus."
+  }
+]

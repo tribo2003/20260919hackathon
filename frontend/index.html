@@ -1,97 +1,82 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>Career Learning Planner</title>
-
     <link rel="stylesheet" href="css/style.css">
 </head>
-
 <body>
+    <header class="topbar">
+        <div>
+            <h1>Career Learning Planner</h1>
+            <p id="summary-text">上傳履歷與目標職位，產生 12 週學習甘特圖、資源與 JD 高頻技能評級。</p>
+        </div>
+    </header>
 
     <main class="app">
-
-        <!-- 左上：Learning Roadmap -->
         <section class="timeline">
             <div class="card">
-                <h2>Learning Roadmap</h2>
-
-                <!-- Gantt Chart 之後由 JavaScript 放進來 -->
-                <div id="gantt-chart"></div>
+                <div class="card-head">
+                    <h2>Learning Roadmap</h2>
+                    <label class="stage-filter">
+                        階段
+                        <select id="stage-filter">
+                            <option value="all">全部</option>
+                        </select>
+                    </label>
+                </div>
+                <div id="gantt-chart" class="gantt-wrap">
+                    <p class="placeholder">產生計畫後，這裡會顯示甘特圖（X 軸時間，Y 軸事件，優先度高者在上）。</p>
+                </div>
             </div>
         </section>
 
-
-        <!-- 左下：Learning Details -->
         <section class="details">
             <div class="card">
                 <h2>Learning Details</h2>
-
-                <!-- 使用者點擊 Gantt Chart 的 event 後，
-                     之後可以在這裡顯示詳細資訊 -->
                 <div id="learning-details">
-                    <p>Select a learning event to see details.</p>
+                    <p class="placeholder">點選甘特圖上的事件，查看該階段學習細項與資源。</p>
                 </div>
             </div>
         </section>
 
-
-        <!-- 右上：User Input -->
         <aside class="user-input">
             <div class="card">
                 <h2>Your Career Goal</h2>
+                <form id="plan-form">
+                    <label for="resume">Resume（PDF / DOCX / TXT）</label>
+                    <input type="file" id="resume" accept=".pdf,.docx,.txt">
 
-                <!-- Resume -->
-                <label for="resume">Resume</label>
-                <input type="file" id="resume">
+                    <label for="resume-text">或直接貼上履歷文字</label>
+                    <textarea id="resume-text" rows="4" placeholder="Paste resume text"></textarea>
 
-                <!-- Desired Job -->
-                <label for="desired-job">Desired Job</label>
-                <input
-                    type="text"
-                    id="desired-job"
-                    placeholder="e.g. Data Engineer"
-                >
+                    <label for="desired-job">Desired Job</label>
+                    <input type="text" id="desired-job" placeholder="e.g. Data Scientist" required>
 
-                <!-- Company -->
-                <label for="company">Company (Optional)</label>
-                <input
-                    type="text"
-                    id="company"
-                    placeholder="e.g. Google"
-                >
+                    <label for="company">Company（Optional）</label>
+                    <input type="text" id="company" placeholder="e.g. Google">
 
-                <!-- Specific Job -->
-                <label for="specific-job">Specific Job (Optional)</label>
-                <input
-                    type="text"
-                    id="specific-job"
-                    placeholder="Paste job description or job title"
-                >
+                    <label for="specific-job">Specific Job / JD（Optional）</label>
+                    <textarea id="specific-job" rows="3" placeholder="特定公司職稱，或貼上 job description"></textarea>
 
-                <button id="generate-plan">
-                    Generate Learning Plan
-                </button>
+                    <button type="submit" id="generate-plan">Generate Learning Plan</button>
+                    <p id="form-status" class="status" hidden></p>
+                </form>
             </div>
         </aside>
 
-
-        <!-- 右下：Skill Rating  Top5-->
         <aside class="skills">
             <div class="card">
-                <h2>Skill Rating</h2>
-
+                <h2>Top JD Skills vs You</h2>
+                <p class="caption" id="skill-caption">職缺資料中被提到最多次的前 5 項技能，對應履歷評級。</p>
                 <div id="skill-rating">
-                    <!-- AI 之後可以把技能評級放在這裡 -->
+                    <p class="placeholder">尚未產生評級。</p>
                 </div>
             </div>
         </aside>
-
     </main>
 
     <script src="js/app.js"></script>
-
 </body>
 </html>
