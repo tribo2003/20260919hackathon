@@ -1,55 +1,202 @@
-* { 
-    box-sizing: border-box; 
-} 
- 
-body { 
-    margin: 0; 
-    font-family: Arial, sans-serif; 
-    background-color: #f5f5f5; 
-} 
- 
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: "Segoe UI", Arial, sans-serif;
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.topbar {
+    padding: 16px 24px 0;
+}
+
+.topbar h1 {
+    margin: 0 0 6px;
+    font-size: 22px;
+}
+
+.topbar p {
+    margin: 0;
+    color: #4b5563;
+    max-width: 1100px;
+    line-height: 1.45;
+}
+
 .app {
     display: grid;
-
-    /* 左 : 右 = 3 : 1 */
-    grid-template-columns: 3fr 1fr;
-
-    /* 上 : 下 = 1 : 2 */
-    grid-template-rows: 1fr 2fr;
-
-    gap: 20px;
-
-    min-height: 100vh;
-    padding: 20px;
+    grid-template-columns: 3fr 1.15fr;
+    grid-template-rows: minmax(280px, 1fr) minmax(320px, 1.35fr);
+    gap: 16px;
+    min-height: calc(100vh - 88px);
+    padding: 16px 24px 24px;
 }
- 
-/* 左上：Learning Roadmap */
-.timeline { 
-    grid-column: 1; 
-    grid-row: 1; 
-} 
- 
-/* 左下：Learning Details */
-.details { 
-    grid-column: 1; 
-    grid-row: 2; 
-} 
- 
-/* 右上：User Input */
-.user-input { 
-    grid-column: 2; 
-    grid-row: 1; 
-} 
- 
-/* 右下：Skill Rating */
-.skills { 
-    grid-column: 2; 
-    grid-row: 2; 
-} 
- 
-.card { 
-    height: 100%; 
-    background-color: white; 
-    border-radius: 12px; 
-    padding: 24px; 
+
+.timeline { grid-column: 1; grid-row: 1; }
+.details { grid-column: 1; grid-row: 2; }
+.user-input { grid-column: 2; grid-row: 1; }
+.skills { grid-column: 2; grid-row: 2; }
+
+.card {
+    height: 100%;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 16px 18px;
+    overflow: auto;
+}
+
+.card-head {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+h2 {
+    margin: 0 0 12px;
+    font-size: 16px;
+}
+
+.card-head h2 {
+    margin: 0;
+}
+
+label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    margin: 10px 0 4px;
+}
+
+input[type="text"],
+input[type="file"],
+textarea,
+select,
+button {
+    width: 100%;
+    font: inherit;
+}
+
+input[type="text"],
+textarea,
+select {
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    padding: 8px;
+    background: #fff;
+}
+
+button {
+    margin-top: 14px;
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 12px;
+    background: #111827;
+    color: #fff;
+    cursor: pointer;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.placeholder,
+.caption,
+.status {
+    color: #6b7280;
+    font-size: 13px;
+    line-height: 1.45;
+}
+
+.status.error { color: #b91c1c; }
+.status.ok { color: #065f46; }
+
+.gantt-wrap {
+    min-height: 180px;
+}
+
+.gantt-svg {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+.gantt-bar {
+    cursor: pointer;
+}
+
+.gantt-bar:hover {
+    opacity: 0.85;
+}
+
+.gantt-bar.active {
+    stroke: #111827;
+    stroke-width: 2;
+}
+
+.detail-block h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.chip {
+    font-size: 12px;
+    background: #f3f4f6;
+    border-radius: 999px;
+    padding: 4px 8px;
+}
+
+.resources {
+    margin: 8px 0 0;
+    padding-left: 18px;
+}
+
+.bar-row {
+    display: grid;
+    grid-template-columns: 110px 1fr 42px;
+    gap: 8px;
+    align-items: center;
+    margin: 10px 0;
+    font-size: 13px;
+}
+
+.bar-track {
+    height: 14px;
+    background: #e5e7eb;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.bar-fill {
+    height: 100%;
+    background: #2563eb;
+}
+
+.bar-meta {
+    color: #6b7280;
+    font-size: 11px;
+    margin-top: 2px;
+}
+
+@media (max-width: 980px) {
+    .app {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto;
+    }
+    .timeline, .details, .user-input, .skills {
+        grid-column: 1;
+        grid-row: auto;
+        min-height: 280px;
+    }
 }
