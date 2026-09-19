@@ -70,6 +70,11 @@ def create_plan():
             "job_count": job_count,
         }
     )
+    with open("last_plan.json", "w", encoding="utf-8") as f:
+        import json
+
+        json.dump(result, f, ensure_ascii=False, indent=2)
+        
     return jsonify(result)
 
 

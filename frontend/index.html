@@ -10,7 +10,7 @@
     <header class="topbar">
         <div>
             <h1>Career Learning Planner</h1>
-            <p id="summary-text">上傳履歷與目標職位，產生 12 週學習甘特圖、資源與 JD 高頻技能評級。</p>
+            <p id="summary-text">Upload your resume and target position to generate a 12-week learning Gantt chart, resources, and JD high-frequency skill ratings.</p>
         </div>
     </header>
 
@@ -20,14 +20,14 @@
                 <div class="card-head">
                     <h2>Learning Roadmap</h2>
                     <label class="stage-filter">
-                        階段
+                        stage
                         <select id="stage-filter">
                             <option value="all">全部</option>
                         </select>
                     </label>
                 </div>
                 <div id="gantt-chart" class="gantt-wrap">
-                    <p class="placeholder">產生計畫後，這裡會顯示甘特圖（X 軸時間，Y 軸事件，優先度高者在上）。</p>
+                    <p class="placeholder">Plan Gantt chart</p>
                 </div>
             </div>
         </section>
@@ -36,7 +36,7 @@
             <div class="card">
                 <h2>Learning Details</h2>
                 <div id="learning-details">
-                    <p class="placeholder">點選甘特圖上的事件，查看該階段學習細項與資源。</p>
+                    <p class="placeholder">Click on events in the Gantt chart to view learning details and resources for that stage.</p>
                 </div>
             </div>
         </section>
@@ -48,7 +48,7 @@
                     <label for="resume">Resume（PDF / DOCX / TXT）</label>
                     <input type="file" id="resume" accept=".pdf,.docx,.txt">
 
-                    <label for="resume-text">或直接貼上履歷文字</label>
+                    <label for="resume-text">or paste resume text directly</label>
                     <textarea id="resume-text" rows="4" placeholder="Paste resume text"></textarea>
 
                     <label for="desired-job">Desired Job</label>
@@ -58,7 +58,7 @@
                     <input type="text" id="company" placeholder="e.g. Google">
 
                     <label for="specific-job">Specific Job / JD（Optional）</label>
-                    <textarea id="specific-job" rows="3" placeholder="特定公司職稱，或貼上 job description"></textarea>
+                    <textarea id="specific-job" rows="3" placeholder="Specific company position, or paste job description"></textarea>
 
                     <button type="submit" id="generate-plan">Generate Learning Plan</button>
                     <p id="form-status" class="status" hidden></p>
@@ -69,9 +69,9 @@
         <aside class="skills">
             <div class="card">
                 <h2>Top JD Skills vs You</h2>
-                <p class="caption" id="skill-caption">職缺資料中被提到最多次的前 5 項技能，對應履歷評級。</p>
+                <p class="caption" id="skill-caption">Top 5 skills mentioned most frequently in job descriptions, matched against your resume.</p>
                 <div id="skill-rating">
-                    <p class="placeholder">尚未產生評級。</p>
+                    <p class="placeholder">No ratings generated yet.</p>
                 </div>
             </div>
         </aside>
