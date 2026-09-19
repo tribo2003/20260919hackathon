@@ -7,6 +7,42 @@ from pathlib import Path
 
 DATA_PATH = Path(__file__).resolve().parent / "data" / "job_postings.json"
 
+# The demo job-posting data only stores company names.  Keep the industry
+# knowledge here so an "Industry / Company" preference can be used for both
+# JD aggregation and the AI prompt.
+COMPANY_INDUSTRIES = {
+    "Google": "Technology",
+    "Meta": "Technology",
+    "Amazon": "E-commerce / Cloud",
+    "Microsoft": "Technology",
+    "Netflix": "Media / Streaming",
+    "Snowflake": "Data Cloud",
+    "Uber": "Mobility / Marketplace",
+    "OpenAI": "AI",
+    "Apple": "Consumer Technology",
+    "Stripe": "Fintech",
+    "Airbnb": "Travel / Marketplace",
+    "Shopify": "E-commerce",
+    "McKinsey": "Consulting",
+    "Spotify": "Media / Streaming",
+    "LinkedIn": "Professional Networking",
+}
+
+INDUSTRY_ALIASES = {
+    "Technology": ("technology", "tech", "software", "saas"),
+    "AI": ("ai", "artificial intelligence", "machine learning"),
+    "Fintech": ("fintech", "financial technology", "finance", "banking"),
+    "E-commerce / Cloud": ("e-commerce", "ecommerce", "cloud"),
+    "E-commerce": ("e-commerce", "ecommerce", "retail"),
+    "Data Cloud": ("data cloud", "data platform"),
+    "Media / Streaming": ("media", "streaming", "entertainment"),
+    "Mobility / Marketplace": ("mobility", "transportation", "marketplace", "rideshare"),
+    "Travel / Marketplace": ("travel", "hospitality", "marketplace"),
+    "Consulting": ("consulting", "consultant"),
+    "Consumer Technology": ("consumer technology", "consumer tech"),
+    "Professional Networking": ("professional networking", "recruiting", "hr tech"),
+}
+
 SKILLS = [
     ("Python", [r"\bpython\b"]),
     ("SQL", [r"\bsql\b"]),
@@ -51,6 +87,32 @@ def load_postings() -> list[dict]:
         return json.load(f)
 
 
+def classify_target_preference(preference: str) -> dict[str, str]:
+    """Identify whether the optional target is a company or an industry."""
+    value = (preference or "").strip()
+    normalized = value.lower()
+    if not value:
+        return {"type": "not specified", "value": "not specified", "industry": ""}
+
+    for company, industry in COMPANY_INDUSTRIES.items():
+        if normalized == company.lower():
+            return {"type": "company", "value": company, "industry": industry}
+
+    # Prefer exact aliases: "fintech" must not be caught by the shorter
+    # "tech" alias for Technology.
+    for industry, aliases in INDUSTRY_ALIASES.items():
+        if normalized == industry.lower() or normalized in aliases:
+            return {"type": "industry", "value": value, "industry": industry}
+
+    for industry, aliases in INDUSTRY_ALIASES.items():
+        if any(alias in normalized for alias in aliases):
+            return {"type": "industry", "value": value, "industry": industry}
+
+    # Preserve an unfamiliar value instead of guessing; the model can still
+    # use it as context even when the local demo data cannot classify it.
+    return {"type": "industry or company preference", "value": value, "industry": ""}
+
+
 def _match_posting(posting: dict, desired_job: str, company: str) -> bool:
     title = (posting.get("title") or "").lower()
     corp = (posting.get("company") or "").lower()
@@ -80,15 +142,22 @@ def _count_skills(texts: list[str]) -> Counter:
 
 def top_skills(
     desired_job: str,
-    company: str = "",
+    preference: str = "",
     extra_jd: str = "",
-    top_n: int = 5,
+    top_n: int = 10,
 ) -> tuple[list[dict], int]:
     postings = load_postings()
     by_title = [p for p in postings if _match_posting(p, desired_job, "")]
-    if company.strip():
-        by_company = [p for p in by_title if _match_posting(p, desired_job, company)]
-        matched = by_title or by_company or postings
+    preference_info = classify_target_preference(preference)
+    if preference_info["type"] == "company":
+        by_company = [p for p in by_title if _match_posting(p, desired_job, preference_info["value"])]
+        matched = by_company or by_title or postings
+    elif preference_info["type"] == "industry":
+        by_industry = [
+            p for p in by_title
+            if COMPANY_INDUSTRIES.get(p.get("company", "")) == preference_info["industry"]
+        ]
+        matched = by_industry or by_title or postings
     else:
         matched = by_title or postings
 

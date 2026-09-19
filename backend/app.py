@@ -11,8 +11,8 @@ if str(BACKEND_DIR) not in sys.path:
     sys.path.insert(0, str(BACKEND_DIR))
 
 import engine
-from resume import extract_resume_text
-from skills import top_skills
+from resume import extract_candidate_name, extract_resume_text
+from skills import classify_target_preference, top_skills
 
 ROOT = Path(__file__).resolve().parent.parent
 FRONTEND = ROOT / "frontend"
@@ -43,7 +43,9 @@ def index():
 @app.post("/api/plan")
 def create_plan():
     desired_job = (request.form.get("desired_job") or "").strip()
-    company = (request.form.get("company") or "").strip()
+    # Keep the form key for backwards compatibility; it may now contain an
+    # industry (for example, "Fintech") or a company (for example, "Google").
+    target_preference = (request.form.get("company") or "").strip()
     specific_job = (request.form.get("specific_job") or "").strip()
     resume_text = (request.form.get("resume_text") or "").strip()
 
@@ -59,17 +61,19 @@ def create_plan():
     if not resume_text:
         return jsonify({"error": "Please upload or paste a resume."}), 400
 
-    skills, job_count = top_skills(desired_job or specific_job, company, specific_job)
+    preference_info = classify_target_preference(target_preference)
+    skills, job_count = top_skills(desired_job or specific_job, target_preference, specific_job)
     result = engine.planner(
         {
             "desired_job": desired_job,
-            "company": company,
+            "target_preference": preference_info,
             "specific_job": specific_job,
             "resume_text": resume_text,
             "top_skills": skills,
             "job_count": job_count,
         }
     )
+    result["candidate_name"] = extract_candidate_name(resume_text)
     with open("last_plan.json", "w", encoding="utf-8") as f:
         import json
 

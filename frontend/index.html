@@ -8,13 +8,18 @@
 </head>
 <body>
     <header class="topbar">
-        <div>
-            <h1>Career Learning Planner</h1>
-            <p id="summary-text">Upload your resume and target position to generate a 12-week learning Gantt chart, resources, and JD high-frequency skill ratings.</p>
-        </div>
+        <h1 id="greeting-title">How can I help you?</h1>
     </header>
 
     <main class="app">
+        <div class="left-column">
+            <section class="summary">
+                <div class="card summary-card">
+                    <h2>Summary</h2>
+                    <p id="summary-text">Upload your resume and target position to generate a 12-week learning Gantt chart, resources, and JD high-frequency skill ratings.</p>
+                </div>
+            </section>
+
         <section class="timeline">
             <div class="card">
                 <div class="card-head">
@@ -41,39 +46,44 @@
             </div>
         </section>
 
-        <aside class="user-input">
-            <div class="card">
-                <h2>Your Career Goal</h2>
-                <form id="plan-form">
-                    <label for="resume">Resume（PDF / DOCX / TXT）</label>
-                    <input type="file" id="resume" accept=".pdf,.docx,.txt">
+        </div>
 
-                    <label for="resume-text">or paste resume text directly</label>
-                    <textarea id="resume-text" rows="4" placeholder="Paste resume text"></textarea>
+        <aside class="right-sidebar">
+            <section class="user-input">
+                <div class="card">
+                    <details class="career-goal" open>
+                        <summary>
+                            <h2>Your Career Goal</h2>
+                        </summary>
+                        <form id="plan-form">
+                            <label for="resume">Resume（PDF / DOCX / TXT）</label>
+                            <input type="file" id="resume" accept=".pdf,.docx,.txt">
 
-                    <label for="desired-job">Desired Job</label>
-                    <input type="text" id="desired-job" placeholder="e.g. Data Scientist" required>
+                            <label for="desired-job">Desired Job</label>
+                            <input type="text" id="desired-job" placeholder="e.g. Data Scientist" required>
 
-                    <label for="company">Company（Optional）</label>
-                    <input type="text" id="company" placeholder="e.g. Google">
+                            <label for="company">Industry / Company（Optional）</label>
+                            <input type="text" id="company" placeholder="e.g. Fintech or Google">
 
-                    <label for="specific-job">Specific Job / JD（Optional）</label>
-                    <textarea id="specific-job" rows="3" placeholder="Specific company position, or paste job description"></textarea>
+                            <label for="specific-job">Specific Job / JD（Optional）</label>
+                            <textarea id="specific-job" rows="3" placeholder="Specific company position, or paste job description"></textarea>
 
-                    <button type="submit" id="generate-plan">Generate Learning Plan</button>
-                    <p id="form-status" class="status" hidden></p>
-                </form>
-            </div>
-        </aside>
-
-        <aside class="skills">
-            <div class="card">
-                <h2>Top JD Skills vs You</h2>
-                <p class="caption" id="skill-caption">Top 5 skills mentioned most frequently in job descriptions, matched against your resume.</p>
-                <div id="skill-rating">
-                    <p class="placeholder">No ratings generated yet.</p>
+                            <button type="submit" id="generate-plan">Generate Learning Plan</button>
+                            <p id="form-status" class="status" hidden></p>
+                        </form>
+                    </details>
                 </div>
-            </div>
+            </section>
+
+            <section class="skills">
+                <div class="card">
+                    <h2>Top JD Skills vs You</h2>
+                    <p class="caption" id="skill-caption">Top 10 skills mentioned most frequently in job descriptions, matched against your resume.</p>
+                    <div id="skill-rating">
+                        <p class="placeholder">No ratings generated yet.</p>
+                    </div>
+                </div>
+            </section>
         </aside>
     </main>
 
