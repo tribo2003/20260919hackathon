@@ -84,7 +84,7 @@ Top skills by JD mention count:
 
 Return ONLY valid JSON with this shape:
 {{
-  "summary": "2-4 sentence gap analysis and plan overview",
+  "summary": "Concise 1-2 sentence gap analysis and priority overview",
   "events": [
     {{
       "event": "short title",
@@ -102,6 +102,7 @@ Return ONLY valid JSON with this shape:
 }}
 
 Rules:
+- Keep the summary concise: no more than 2 sentences, focusing only on the most important strengths, gaps, and learning priority.
 - If the preference type is company, tailor examples and interview preparation to that company's likely role expectations.
 - If the preference type is industry, tailor domain knowledge, projects, and terminology to that industry; do not treat it as a company name.
 - If the preference type is "industry or company preference", use it as context but do not invent company-specific requirements.
