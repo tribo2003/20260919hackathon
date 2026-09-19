@@ -30,7 +30,12 @@ def planner(payload: dict) -> dict:
         ai_plan = _fallback_plan(payload, hits)
 
     events = _normalize_events(ai_plan.get("events") or [])
-    ratings = _merge_ratings(top_skills, hits, ai_plan.get("skill_ratings") or [])
+    ratings = _merge_ratings(
+        top_skills,
+        hits,
+        ai_plan.get("skill_ratings") or [],
+        payload.get("job_count", 0),
+    )
     summary = (ai_plan.get("summary") or "").strip() or _fallback_summary(payload, ratings)
 
     return {
@@ -58,10 +63,16 @@ def _call_model(payload: dict, hits: dict) -> dict:
         f"resume mentions it: {'yes' if hits.get(s['skill']) else 'no'}"
         for s in payload["top_skills"]
     )
+    target_preference = payload.get("target_preference") or {}
+    preference_type = target_preference.get("type", "not specified")
+    preference_value = target_preference.get("value", "not specified")
+    mapped_industry = target_preference.get("industry") or "not mapped"
     prompt = f"""You are a career coach. Build a 12-week learning plan.
 
 Target job: {payload.get('desired_job') or 'not specified'}
-Company: {payload.get('company') or 'any'}
+Industry / Company preference type: {preference_type}
+Industry / Company preference: {preference_value}
+Mapped industry: {mapped_industry}
 Specific job notes / JD:
 {payload.get('specific_job') or '(none)'}
 
@@ -73,7 +84,7 @@ Top skills by JD mention count:
 
 Return ONLY valid JSON with this shape:
 {{
-  "summary": "2-4 sentence gap analysis and plan overview",
+  "summary": "Concise 1-2 sentence gap analysis and priority overview",
   "events": [
     {{
       "event": "short title",
@@ -91,6 +102,10 @@ Return ONLY valid JSON with this shape:
 }}
 
 Rules:
+- Keep the summary concise: no more than 2 sentences, focusing only on the most important strengths, gaps, and learning priority.
+- If the preference type is company, tailor examples and interview preparation to that company's likely role expectations.
+- If the preference type is industry, tailor domain knowledge, projects, and terminology to that industry; do not treat it as a company name.
+- If the preference type is "industry or company preference", use it as context but do not invent company-specific requirements.
 - 6 to 10 events covering 12 weeks.
 - priority is 1-10, higher = more urgent / important.
 - start_week/end_week are integers 0-12, end_week > start_week.
@@ -223,7 +238,12 @@ def _normalize_events(events: list[dict]) -> list[dict]:
     return cleaned
 
 
-def _merge_ratings(top_skills: list[dict], hits: dict, ai_ratings: list[dict]) -> list[dict]:
+def _merge_ratings(
+    top_skills: list[dict],
+    hits: dict,
+    ai_ratings: list[dict],
+    job_count: int,
+) -> list[dict]:
     by_name = {str(r.get("skill")): r for r in ai_ratings}
     merged = []
     for item in top_skills:
@@ -234,10 +254,14 @@ def _merge_ratings(top_skills: list[dict], hits: dict, ai_ratings: list[dict]) -
             rating = max(0, min(100, int(rating)))
         except (TypeError, ValueError):
             rating = 70 if hits.get(name) else 30
+        # A JD score is the percentage of matched job descriptions mentioning
+        # this skill, so it shares the same 0-100 scale as the resume rating.
+        jd_rating = round(100 * item["mention_count"] / job_count) if job_count else 0
         merged.append(
             {
                 "skill": name,
                 "mention_count": item["mention_count"],
+                "jd_rating": min(100, jd_rating),
                 "user_rating": rating,
             }
         )

@@ -1,5 +1,6 @@
 const form = document.getElementById("plan-form");
 const statusEl = document.getElementById("form-status");
+const greetingTitleEl = document.getElementById("greeting-title");
 const summaryEl = document.getElementById("summary-text");
 const ganttEl = document.getElementById("gantt-chart");
 const detailsEl = document.getElementById("learning-details");
@@ -17,8 +18,9 @@ form.addEventListener("submit", async (event) => {
 
     const body = new FormData();
     const resumeFile = document.getElementById("resume").files[0];
+    const resumeTextInput = document.getElementById("resume-text");
     if (resumeFile) body.append("resume", resumeFile);
-    body.append("resume_text", document.getElementById("resume-text").value);
+    body.append("resume_text", resumeTextInput ? resumeTextInput.value : "");
     body.append("desired_job", document.getElementById("desired-job").value);
     body.append("company", document.getElementById("company").value);
     body.append("specific_job", document.getElementById("specific-job").value);
@@ -33,6 +35,10 @@ form.addEventListener("submit", async (event) => {
         planState.selected = planState.events[0] || null;
         planState.stage = "all";
 
+        const candidateName = String(data.candidate_name || "").trim();
+        greetingTitleEl.textContent = candidateName
+            ? `How can I help you, ${candidateName}?`
+            : "How can I help you?";
         summaryEl.textContent = data.summary || "";
         fillStages(planState.events);
         renderAll();
@@ -165,15 +171,32 @@ function renderSkills(skills, jobCount) {
         skillsEl.innerHTML = `<p class="placeholder">尚未產生評級。</p>`;
         return;
     }
-    skillCaption.textContent = `依 ${jobCount || "相關"} 則職缺 JD 統計，被提到最多次的前 ${skills.length} 項技能，對應你的履歷評級（0-100）。`;
+    skillCaption.textContent = `依 ${jobCount || "相關"} 則職缺 JD 統計：JD average 為該技能出現在職缺中的比例；Your resume 為履歷技能評分（0-100）。`;
+    const largestGapSkills = new Set(
+        [...skills]
+            .sort((a, b) => Math.abs((Number(b.jd_rating) || 0) - (Number(b.user_rating) || 0))
+                - Math.abs((Number(a.jd_rating) || 0) - (Number(a.user_rating) || 0)))
+            .slice(0, 3)
+            .map((skill) => skill.skill),
+    );
     skillsEl.innerHTML = skills.map((s) => `
         <div class="bar-row">
-            <div>
+            <div class="skill-heading${largestGapSkills.has(s.skill) ? " gap-skill" : ""}">
                 <div>${escapeHtml(s.skill)}</div>
                 <div class="bar-meta">JD ${escapeHtml(String(s.mention_count))} 次</div>
             </div>
-            <div class="bar-track"><div class="bar-fill" style="width:${Number(s.user_rating) || 0}%"></div></div>
-            <div>${escapeHtml(String(s.user_rating))}</div>
+            <div class="skill-bars">
+                <div class="bar-series">
+                    <span class="bar-label">JD average</span>
+                    <div class="bar-track"><div class="bar-fill jd-fill" style="width:${Number(s.jd_rating) || 0}%"></div></div>
+                    <span class="bar-value">${escapeHtml(String(s.jd_rating ?? 0))}</span>
+                </div>
+                <div class="bar-series">
+                    <span class="bar-label">Your resume</span>
+                    <div class="bar-track"><div class="bar-fill resume-fill" style="width:${Number(s.user_rating) || 0}%"></div></div>
+                    <span class="bar-value">${escapeHtml(String(s.user_rating))}</span>
+                </div>
+            </div>
         </div>
     `).join("");
 }
