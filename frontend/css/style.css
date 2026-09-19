@@ -200,6 +200,56 @@ button:disabled {
     font-size: 18px;
 }
 
+.left-column {
+    min-width: 0;
+}
+
+.details-table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+}
+
+.details-table {
+    width: 100%;
+    min-width: 580px;
+    border-collapse: collapse;
+    font-size: 13px;
+    text-align: left;
+}
+
+.details-table th,
+.details-table td {
+    padding: 12px 14px;
+    vertical-align: top;
+    overflow-wrap: anywhere;
+}
+
+.details-table th {
+    background: #e8f1f7;
+    color: var(--navy);
+    border-bottom: 1px solid var(--line);
+}
+
+.details-table tbody tr + tr td {
+    border-top: 1px solid var(--line);
+}
+
+.event-resources {
+    margin-top: 8px;
+}
+
+.event-resources summary {
+    color: var(--navy-soft);
+    cursor: pointer;
+    font-size: 12px;
+}
+
+.details-table td:nth-child(4),
+.details-table td:nth-child(5) {
+    white-space: nowrap;
+}
+
 .meta {
     display: flex;
     flex-wrap: wrap;

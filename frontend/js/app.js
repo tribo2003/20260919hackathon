@@ -82,7 +82,7 @@ function visibleEvents() {
 
 function renderAll() {
     renderGantt(visibleEvents(), planState.selected);
-    renderDetails(planState.selected);
+    renderDetails(planState.events);
 }
 
 function renderGantt(events, selected) {
@@ -143,25 +143,50 @@ function renderGantt(events, selected) {
     });
 }
 
-function renderDetails(eventItem) {
-    if (!eventItem) {
-        detailsEl.innerHTML = `<p class="placeholder">點選甘特圖上的事件，查看該階段學習細項與資源。</p>`;
+function renderDetails(events) {
+    if (!events.length) {
+        detailsEl.innerHTML = `<p class="placeholder">產生學習計畫後，這裡會列出所有學習項目。</p>`;
         return;
     }
-    const resources = (eventItem.resources || [])
-        .map((r) => `<li><a href="${escapeAttr(r.url)}" target="_blank" rel="noreferrer">${escapeHtml(r.title || r.url)}</a></li>`)
-        .join("");
+    const rows = events.map((eventItem) => {
+        const resources = (eventItem.resources || [])
+            .map((r) => `<li><a href="${escapeAttr(r.url)}" target="_blank" rel="noreferrer">${escapeHtml(r.title || r.url)}</a></li>`)
+            .join("");
+        return `
+            <tr>
+                <td>${escapeHtml(eventItem.category ?? eventItem.stage ?? "-")}</td>
+                <td>
+                    ${escapeHtml(eventItem.skill ?? eventItem.event ?? "-")}
+                    <details class="event-resources">
+                        <summary>Details &amp; Resources</summary>
+                        <p>${escapeHtml(eventItem.details || "")}</p>
+                        <ul class="resources">${resources || "<li>無指定資源</li>"}</ul>
+                    </details>
+                </td>
+                <td>${escapeHtml(eventItem.importance ?? eventItem.priority ?? "-")}</td>
+                <td>${escapeHtml(eventItem.start_date ?? "-")}</td>
+                <td>${escapeHtml(eventItem.end_date ?? "-")}</td>
+            </tr>
+        `;
+    }).join("");
     detailsEl.innerHTML = `
         <div class="detail-block">
-            <h3>${escapeHtml(eventItem.event)}</h3>
-            <div class="meta">
-                <span class="chip">階段：${escapeHtml(eventItem.stage || "-")}</span>
-                <span class="chip">優先度：${escapeHtml(String(eventItem.priority))}</span>
-                <span class="chip">${escapeHtml(eventItem.start_date)} → ${escapeHtml(eventItem.end_date)}</span>
+            <div class="details-table-wrap" role="region" aria-label="Learning details" tabindex="0">
+                <table class="details-table">
+                    <thead>
+                        <tr>
+                            <th scope="col">category</th>
+                            <th scope="col">skill</th>
+                            <th scope="col">importance</th>
+                            <th scope="col">start_date</th>
+                            <th scope="col">end_date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${rows}
+                    </tbody>
+                </table>
             </div>
-            <p>${escapeHtml(eventItem.details || "")}</p>
-            <h4>Resources</h4>
-            <ul class="resources">${resources || "<li>無指定資源</li>"}</ul>
         </div>
     `;
 }

@@ -12,24 +12,26 @@ from skills import resume_skill_hits
 
 DEFAULT_BASE_URL = "https://api.ifm.ai/v1"
 DEFAULT_MODEL = "IFM/K2-Horizon-375B-A23B"
+DEFAULT_HORIZON_WEEKS = 12
 
 
 def planner(payload: dict) -> dict:
     top_skills = payload["top_skills"]
     resume_text = payload.get("resume_text") or ""
+    horizon = max(1, _to_int(payload.get("horizon_weeks"), DEFAULT_HORIZON_WEEKS))
     hits = resume_skill_hits(resume_text, [s["skill"] for s in top_skills])
 
     ai_plan = None
     error = None
     try:
-        ai_plan = _call_model(payload, hits)
+        ai_plan = _call_model(payload, hits, horizon)
     except Exception as exc:  # noqa: BLE001 — demo fallback
-        error = str(exc)
+        error = str(exc)[:300]
 
     if not ai_plan:
-        ai_plan = _fallback_plan(payload, hits)
+        ai_plan = _fallback_plan(payload, hits, horizon)
 
-    events = _normalize_events(ai_plan.get("events") or [])
+    events = _normalize_events(ai_plan.get("events") or [], horizon)
     ratings = _merge_ratings(
         top_skills,
         hits,
@@ -54,12 +56,13 @@ def _client() -> OpenAI:
     return OpenAI(
         base_url=os.environ.get("IFM_BASE_URL", DEFAULT_BASE_URL),
         api_key=api_key,
+        timeout=240,
     )
 
 
-def _call_model(payload: dict, hits: dict) -> dict:
+def _call_model(payload: dict, hits: dict, horizon: int) -> dict:
     skill_lines = "\n".join(
-        f"- {s['skill']}: mentioned in {s['mention_count']} job descriptions; "
+        f"- {s['skill']}: mentioned in {s['mention_count']} of {payload.get('job_count', '?')} job descriptions; "
         f"resume mentions it: {'yes' if hits.get(s['skill']) else 'no'}"
         for s in payload["top_skills"]
     )
@@ -67,7 +70,7 @@ def _call_model(payload: dict, hits: dict) -> dict:
     preference_type = target_preference.get("type", "not specified")
     preference_value = target_preference.get("value", "not specified")
     mapped_industry = target_preference.get("industry") or "not mapped"
-    prompt = f"""You are a career coach. Build a 12-week learning plan.
+    prompt = f"""You are a career coach. Build a {horizon}-week learning plan.
 
 Target job: {payload.get('desired_job') or 'not specified'}
 Industry / Company preference type: {preference_type}
@@ -106,9 +109,10 @@ Rules:
 - If the preference type is company, tailor examples and interview preparation to that company's likely role expectations.
 - If the preference type is industry, tailor domain knowledge, projects, and terminology to that industry; do not treat it as a company name.
 - If the preference type is "industry or company preference", use it as context but do not invent company-specific requirements.
-- 6 to 10 events covering 12 weeks.
+- 6 to 10 events covering {horizon} weeks.
 - priority is 1-10, higher = more urgent / important.
-- start_week/end_week are integers 0-12, end_week > start_week.
+- start_week/end_week are integers 0-{horizon}, end_week > start_week.
+- Sequence dependent skills so prerequisites finish before projects that use them. Independent topics may overlap.
 - skill_ratings must include exactly these skills: {[s['skill'] for s in payload['top_skills']]}
 - rating is 0-100 based on the resume evidence.
 - Resources should be real, well-known public URLs when possible.
@@ -125,7 +129,8 @@ Rules:
 
 
 def _parse_json(text: str) -> dict:
-    text = text.strip()
+    text = re.sub(r"<think>.*?</think>", "", text, flags=re.S)
+    text = text.split("</think>")[-1].strip()
     fenced = re.search(r"```(?:json)?\s*(.*?)```", text, flags=re.S)
     if fenced:
         text = fenced.group(1).strip()
@@ -135,7 +140,7 @@ def _parse_json(text: str) -> dict:
     return json.loads(text)
 
 
-def _fallback_plan(payload: dict, hits: dict) -> dict:
+def _fallback_plan(payload: dict, hits: dict, horizon: int) -> dict:
     skills = payload["top_skills"]
     job = payload.get("desired_job") or "the target role"
     events = []
@@ -143,14 +148,14 @@ def _fallback_plan(payload: dict, hits: dict) -> dict:
     stages = ["Foundation", "Build", "Portfolio", "Interview"]
     for i, item in enumerate(skills):
         name = item["skill"]
-        span = 2 if i < 3 else 3
+        span = min(horizon, 2 if i < 3 else 3)
         events.append(
             {
                 "event": f"Level up {name}",
                 "stage": stages[min(i, len(stages) - 1)],
                 "priority": 10 - i,
                 "start_week": week,
-                "end_week": min(12, week + span),
+                "end_week": min(horizon, week + span),
                 "details": (
                     f"Close the gap on {name} for {job}. "
                     "Work through one structured course, then apply it in a small project."
@@ -158,14 +163,14 @@ def _fallback_plan(payload: dict, hits: dict) -> dict:
                 "resources": _default_resources(name),
             }
         )
-        week = min(10, week + 2)
+        week = min(max(0, horizon - 2), week + 2)
     events.append(
         {
             "event": "Portfolio + mock interviews",
             "stage": "Interview",
             "priority": 8,
-            "start_week": 9,
-            "end_week": 12,
+            "start_week": max(0, horizon - 3),
+            "end_week": horizon,
             "details": "Ship one public project that showcases the top skills, then run weekly mock interviews.",
             "resources": [
                 {"title": "Interviewing.io", "url": "https://interviewing.io/"},
@@ -211,22 +216,31 @@ def _fallback_summary(payload: dict, ratings: list[dict]) -> str:
     return " ".join(bits)
 
 
-def _normalize_events(events: list[dict]) -> list[dict]:
+def _to_int(value, default: int) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
+def _normalize_events(events: list[dict], horizon: int) -> list[dict]:
     today = date.today()
     cleaned = []
     for item in events:
-        start_w = int(item.get("start_week") or 0)
-        end_w = int(item.get("end_week") or start_w + 2)
+        if not isinstance(item, dict):
+            continue
+        start_w = max(0, min(horizon - 1, _to_int(item.get("start_week"), 0)))
+        end_w = max(start_w + 1, min(horizon, _to_int(item.get("end_week"), start_w + 2)))
         if end_w <= start_w:
             end_w = start_w + 1
         start = today + timedelta(weeks=start_w)
         end = today + timedelta(weeks=end_w)
-        resources = item.get("resources") or []
+        resources = item.get("resources") if isinstance(item.get("resources"), list) else []
         cleaned.append(
             {
                 "event": item.get("event") or "Learning block",
                 "stage": item.get("stage") or "Foundation",
-                "priority": int(item.get("priority") or 1),
+                "priority": max(1, min(10, _to_int(item.get("priority"), 1))),
                 "details": item.get("details") or "",
                 "resources": resources,
                 "start_date": start.isoformat(),
